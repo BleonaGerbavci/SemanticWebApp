@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movies by Genre</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1 id="genreTitle"></h1>
+        <ul id="genreMovies"></ul>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const genre = urlParams.get('genre');
+        const genreTitle = document.getElementById('genreTitle');
+        const movieList = document.getElementById('genreMovies');
+
+        genreTitle.textContent = `Movies in Genre: ${genre}`;
+
+        const movies = await fetchMoviesByGenre(genre);
+
+        if (movies.length > 0) {
+            movies.forEach(movie => {
+            const listItem = document.createElement('li');
+            listItem.textContent = movie; // Display the movie label
+            movieList.appendChild(listItem);
+            });
+        } else {
+            const noMoviesMessage = document.createElement('p');
+            noMoviesMessage.textContent = `No movies available in the "${genre}" genre.`;
+            movieList.appendChild(noMoviesMessage);
+        }
+        });
+
+    </script>
+</body>
+</html>

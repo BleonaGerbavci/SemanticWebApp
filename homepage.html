@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cinematic Explorer</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Cinematic Explorer</h1>
+            <p>Discover movies, genres, and stars that define cinema.</p>
+            <input type="text" id="movieInput" placeholder="Search by movie name...">
+            <button id="searchButton">Explore</button>
+        </header>
+
+        <section class="main-sections">
+            <div class="card" id="spotlightMovies">
+                <h2>Spotlight Movies</h2>
+                <p>Discover the latest and trending movies.</p>
+            </div>
+            <div class="card" id="discoverGenres">
+                <h2>Discover Genres</h2>
+                <p>Explore movies by genres and find your favorites.</p>
+            </div>
+            <div class="card" id="meetStars" onclick="window.location.href='stars.html'">
+                <h2>Meet the Stars</h2>
+                <p>Learn about actors, directors, and their contributions.</p>
+            </div>
+            
+        </section>
+
+        <section class="movie-list">
+            <h2>All movies</h2>
+            <div id="loadingIndicator" class="loading-indicator">Loading...</div>
+            <ul id="movieResults"></ul>
+        </section>
+    </div>
+
+    <div id="movieModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2 id="modalTitle">Movie Title</h2>
+            <p id="modalDetails">Details about the movie...</p>
+        </div>
+    </div>
+    
+    <div id="genreModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeGenreModal">&times;</span>
+            <h2>Available Genres</h2>
+            <ul id="genreList"></ul>
+        </div>
+    </div>    
+    <script src="app.js"></script>
+</body>
+</html>

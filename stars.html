@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meet the Stars</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Meet the Stars</h1>
+            <p>Explore the actors and directors behind your favorite movies.</p>
+        </header>
+
+        <section id="starsList">
+            <h2>Actors and Directors</h2>
+            <div id="loadingIndicator" class="loading-indicator">Loading...</div>
+            <ul id="starsResults"></ul>
+        </section>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', async () => {
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        if (loadingIndicator) {
+          loadingIndicator.style.display = 'block';
+        }
+    
+        const stars = await fetchAllStars();
+        if (stars.length > 0) {
+          displayStars(stars);
+        }
+    
+        if (loadingIndicator) {
+          loadingIndicator.style.display = 'none';
+        }
+      });
+    </script>    
+</body>
+</html>
