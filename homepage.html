@@ -16,20 +16,23 @@
         </header>
 
         <section class="main-sections">
-            <div class="card" id="spotlightMovies">
-                <h2>Spotlight Movies</h2>
-                <p>Discover the latest and trending movies.</p>
-            </div>
+            <div class="card" id="spotlightMovies" onclick="window.location.href='spotlight.html'">
+                <img src="assets/spotlight.png" alt="Spotlight" class="card-icon">
+                <h2>Spotlight</h2>
+                <p>Run custom SPARQL queries and explore the ontology in depth.</p>
+            </div>            
             <div class="card" id="discoverGenres">
+                <img src="assets/film.png" alt="Genres" class="card-icon">
                 <h2>Discover Genres</h2>
                 <p>Explore movies by genres and find your favorites.</p>
             </div>
             <div class="card" id="meetStars" onclick="window.location.href='stars.html'">
+                <img src="assets/casting.png" alt="Stars" class="card-icon">
                 <h2>Meet the Stars</h2>
                 <p>Learn about actors, directors, and their contributions.</p>
             </div>
-            
         </section>
+        
 
         <section class="movie-list">
             <h2>All movies</h2>

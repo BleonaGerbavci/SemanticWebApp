@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom SPARQL Query</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Custom SPARQL Query</h1>
+            <p>Write and execute your SPARQL queries directly.</p>
+        </header>
+
+        <section class="query-section">
+            <textarea id="sparqlQueryInput" rows="10">
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX mo: <http://www.movieontology.org/>
+        SELECT DISTINCT ?actorName ?awardName ?awardYear
+        WHERE {
+          ?award mo:awardedTo ?actor .
+          ?actor mo:hasName ?actorName .
+          ?award mo:hasAwardName ?awardName .
+          ?award mo:hasAwardYear ?awardYear .
+        }
+        ORDER BY ?actorName
+            </textarea>
+            <div class="query-button-container">
+                <button id="executeQueryButton">Execute Query</button>
+            </div>
+        </section>
+        
+        
+
+        <section class="query-results">
+            <h2>Results</h2>
+            <div id="queryResults" class="results-container"></div>
+        </section>
+    </div>
+
+    <script>
+        const endpointURL = 'http://localhost:3030/moviesDataset/query';
+
+        document.getElementById('executeQueryButton').addEventListener('click', async () => {
+            const query = document.getElementById('sparqlQueryInput').value.trim();
+            if (!query) {
+                alert('Please enter a SPARQL query.');
+                return;
+            }
+
+            const params = new URLSearchParams();
+            params.append('query', query);
+            params.append('format', 'application/json');
+
+            try {
+                const response = await fetch(endpointURL + '?' + params.toString(), {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' },
+                });
+
+                if (!response.ok) {
+                    throw new Error(`SPARQL query failed with status ${response.status}`);
+                }
+
+                const data = await response.json();
+                displayResults(data);
+            } catch (error) {
+                console.error('Error executing query:', error);
+                document.getElementById('queryResults').innerHTML = '<p>Error executing query. Check console for details.</p>';
+            }
+        });
+
+        function displayResults(data) {
+            const resultsContainer = document.getElementById('queryResults');
+            resultsContainer.innerHTML = '';
+
+            if (!data.results.bindings.length) {
+                resultsContainer.innerHTML = '<p>No results found.</p>';
+                return;
+            }
+
+            const table = document.createElement('table');
+            const thead = document.createElement('thead');
+            const tbody = document.createElement('tbody');
+
+            // Create table headers
+            const headers = Object.keys(data.results.bindings[0]);
+            const headerRow = document.createElement('tr');
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.textContent = header;
+                headerRow.appendChild(th);
+            });
+            thead.appendChild(headerRow);
+
+            // Create table rows
+            data.results.bindings.forEach(row => {
+                const tr = document.createElement('tr');
+                headers.forEach(header => {
+                    const td = document.createElement('td');
+                    td.textContent = row[header]?.value || '';
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+
+            table.appendChild(thead);
+            table.appendChild(tbody);
+            resultsContainer.appendChild(table);
+        }
+    </script>
+</body>
+</html>

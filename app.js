@@ -313,6 +313,41 @@ async function showGenresModal() {
 
 }
 
+async function fetchMoviesByGenre(genre) {
+  const sparqlQuery = `
+      PREFIX mo: <http://www.movieontology.org/>
+      SELECT DISTINCT (STRAFTER(STR(?movie), "http://www.movieontology.org/") AS ?movieLabel)
+      WHERE {
+          ?movie mo:belongsToGenre ?genre .
+          FILTER regex(str(?genre), "${genre}", "i")
+      }
+      ORDER BY ?movieLabel
+  `;
+
+  const params = new URLSearchParams();
+  params.append('query', sparqlQuery);
+  params.append('format', 'application/json');
+
+  try {
+      const response = await fetch(endpointURL + '?' + params.toString(), {
+          method: 'GET',
+          headers: {
+              'Accept': 'application/json',
+          },
+      });
+
+      if (!response.ok) {
+          throw new Error(`SPARQL query failed with status ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.results.bindings.map(binding => binding.movieLabel.value);
+  } catch (error) {
+      console.error('Error fetching movies by genre:', error);
+      return [];
+  }
+}
+
 
 // Close the modal
 document.getElementById('closeGenreModal').addEventListener('click', () => {
@@ -375,3 +410,4 @@ async function fetchAllStars() {
     return [];
   }
 }
+

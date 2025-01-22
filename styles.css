@@ -15,21 +15,22 @@ body {
 
 header {
   text-align: center;
-  padding: 20px;
-  background: linear-gradient(90deg, #4a148c, #1a237e);
+  padding: 60px 20px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+    url('assets/bg.jpg') center/cover no-repeat;
   color: #fff;
-  margin-bottom: 30px;
+  margin-bottom: 40px;
   border-radius: 8px;
 }
 
 header h1 {
-  font-size: 36px;
+  font-size: 48px;
   margin: 0;
 }
 
 header p {
-  font-size: 18px;
-  margin: 10px 0;
+  font-size: 22px;
+  margin: 15px 0;
 }
 
 input[type="text"] {
@@ -81,6 +82,13 @@ button:hover {
 
 .card h2 {
   color: #ffca28;
+}
+
+.card-icon {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 15px;
+  border-radius: 8px;
 }
 
 .movie-list h2 {
@@ -201,28 +209,200 @@ button:hover {
   background-color: #ffca28;
   color: #000;
 }
+
+/* Genre Page Header */
+#genreTitle {
+  text-align: center;
+  font-size: 36px;
+  color: #ffca28;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
+    url('assets/bg.jpg') center/cover no-repeat;
+  padding: 40px 20px;
+  border-radius: 8px;
+}
+
+/* Movie List */
+#genreMovies {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 30px;
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+
+/* Movie Card */
+#genreMovies li {
+  background-color: #2c2c2c;
+  border-radius: 12px;
+  width: 100%;
+  padding: 20px;
+  text-align: center;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  font-size: 18px;
+}
+
+#genreMovies li:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  #genreMovies {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+
+  #genreTitle {
+    font-size: 28px;
+  }
+}
+/* Stars List Styling */
+#starsList h2 {
+  text-align: center;
+  font-size: 28px;
+  margin-bottom: 30px;
+}
+
 #starsResults {
   list-style-type: none;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 60px;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 30px;
   margin-top: 20px;
-  margin: 20px;
 }
 
+/* Individual Star Card */
 #starsResults li {
   background-color: #2c2c2c;
-  border-radius: 8px;
-  width: 250px;
-  padding: 15px;
+  border-radius: 12px;
+  padding: 20px;
   text-align: center;
-  line-height: 35px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  line-height: 1.5;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 #starsResults li:hover {
   transform: scale(1.05);
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
+
+/* Star Name Styling */
+#starsResults li strong {
+  font-size: 20px;
+  color: #ffca28;
+  display: block;
+  margin-bottom: 8px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  #starsResults {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+
+  header h1 {
+    font-size: 36px;
+  }
+
+  header p {
+    font-size: 18px;
+  }
+}
+
+/* Query Page Styling */
+.query-section {
+  margin: 20px 0;
+  text-align: center;
+}
+
+textarea#sparqlQueryInput {
+  width: 90%;
+  max-width: 1000px;
+  height: 200px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background-color: #2c2c2c;
+  color: #fff;
+  padding: 15px;
+  font-size: 16px;
+  resize: none;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+textarea#sparqlQueryInput:focus {
+  outline: none;
+  border-color: #ffca28;
+  box-shadow: 0 0 10px rgba(255, 202, 40, 0.5);
+}
+
+button#executeQueryButton {
+  margin-top: 20px;
+  padding: 12px 25px;
+  font-size: 16px;
+  font-weight: bold;
+  background-color: #ffca28;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button#executeQueryButton:hover {
+  background-color: #ffca28;
+  transform: scale(1.05);
+}
+
+.query-results {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.results-container {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #2c2c2c;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  overflow-x: auto;
+}
+
+.results-container table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.results-container table th,
+.results-container table td {
+  border: 1px solid #444;
+  padding: 10px;
+  text-align: left;
+  color: #fff;
+}
+
+.results-container table th {
+  background-color: #4a148c;
+}
+
+.results-container table tr:nth-child(even) {
+  background-color: #1c1c1c;
+}
+
+.query-button-container {
+  text-align: center;
+  margin-top: 15px;
+}
+
+button#executeQueryButton {
+  display: inline-block;
+  margin: 0 auto;
+}
+
