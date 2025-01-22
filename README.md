@@ -53,7 +53,7 @@ Cinematic Explorer is an intuitive semantic web application designed to explore 
 ### Steps
 1. Clone this repository:
    ```bash
-   git clone https://github.com/your-username/cinematic-explorer.git
-   cd cinematic-explorer
+   git clone https://github.com/your-username/SemanticWebApp.git
+   cd SemanticWebApp
 2. Start the SPARQL endpoint using Apache Jena Fuseki and load the movie ontology dataset.
-3. Open index.html in your browser to launch the application.
+3. Open homepage.html in your browser to launch the application.
