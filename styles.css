@@ -103,7 +103,7 @@ button:hover {
   margin: 0;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 150px; /* Add space between cards */
+  gap: 140px; /* Add space between cards */
 }
 
 /* Individual Movie Card */

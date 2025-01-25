@@ -1,7 +1,5 @@
-// Base Fuseki endpoint URL
 const endpointURL = 'http://localhost:3030/moviesDataset/query';
 
-// Function to run a SPARQL query to get all movies
 async function fetchAllMovies() {
   const sparqlQuery = `
     PREFIX mo: <http://www.movieontology.org/>
@@ -11,7 +9,7 @@ async function fetchAllMovies() {
     WHERE {
       ?movie mo:belongsToGenre ?genre .
     }
-    LIMIT 50
+    ORDER BY ?movieLabel
   `;
 
   const params = new URLSearchParams();
@@ -31,9 +29,24 @@ async function fetchAllMovies() {
     }
 
     const data = await response.json();
-    return data.results.bindings.map((binding) => ({
-      movieLabel: binding.movieLabel.value,
-      genre: binding.genreLabel.value,
+
+    // Group movies by title, merging genres
+    const movieMap = new Map();
+    data.results.bindings.forEach((binding) => {
+      const movieLabel = binding.movieLabel.value;
+      const genreLabel = binding.genreLabel.value;
+
+      if (!movieMap.has(movieLabel)) {
+        movieMap.set(movieLabel, { movieLabel, genres: [genreLabel] });
+      } else {
+        movieMap.get(movieLabel).genres.push(genreLabel);
+      }
+    });
+
+    // Convert map to array and format genres as a comma-separated string
+    return Array.from(movieMap.values()).map((movie) => ({
+      movieLabel: movie.movieLabel,
+      genres: movie.genres.join(", "),
     }));
   } catch (error) {
     console.error("Error fetching movies:", error);
@@ -41,7 +54,8 @@ async function fetchAllMovies() {
   }
 }
 
-// Function to fetch movies filtered by genre
+
+// Function to fetch movies filtered by name
 async function fetchMoviesByName(movieName) {
   const sparqlQuery = `
     PREFIX mo: <http://www.movieontology.org/>
@@ -83,8 +97,6 @@ async function fetchMoviesByName(movieName) {
   }
 }
 
-
-
 // Display movies in the list
 function displayMovies(movies) {
   const movieList = document.getElementById("movieResults");
@@ -92,43 +104,39 @@ function displayMovies(movies) {
   movieList.innerHTML = ""; // Clear existing content
   loadingIndicator.style.display = "none"; // Hide loading indicator
 
-  if (movies.length === 0) {
-    movieList.innerHTML = `<p>No movies found matching your search.</p>`;
-    return;
-  }
-
   movies.forEach((movie) => {
     const card = document.createElement("div");
     card.className = "movie-card";
     card.innerHTML = `
       <h3>${movie.movieLabel}</h3>
-      <p>Genre: ${movie.genre}</p>
+      <p>Genre: ${movie.genres}</p>
     `;
+
+    // Attach event listener for modal
     card.addEventListener("click", async () => {
-      const details = await fetchMovieDetails(movie.movieLabel);
+      const details = await fetchMovieDetails(movie.movieLabel); // Pass ontology individual
       if (details) {
         showMovieDetails(details);
+      } else {
+        console.error(`No details found for ${movie.movieLabel}`);
       }
     });
+
     movieList.appendChild(card);
   });
 }
 
 
-
 async function fetchMovieDetails(movieLabel) {
-  const cleanedMovieLabel = movieLabel.trim(); // Clean the movie label
-  console.log("Fetching details for movie:", cleanedMovieLabel); // Debugging
+  const cleanedMovieLabel = movieLabel.trim();
 
   const sparqlQuery = `
     PREFIX mo: <http://www.movieontology.org/>
-    SELECT DISTINCT 
-      ?title ?releaseDate ?runtime 
-      (STRAFTER(STR(?genre), "http://www.movieontology.org/") AS ?genreLabel) 
-      ?directorName
+    SELECT DISTINCT
+      ?title ?releaseDate ?runtime ?genre ?directorName ?producer ?reviewer ?rating ?festival
     WHERE {
       ?movie mo:hasTitle ?title .
-      FILTER regex(STR(?title), "^${cleanedMovieLabel}$", "i") .
+      FILTER regex(STR(?movie), "${cleanedMovieLabel}", "i") .
       OPTIONAL { ?movie mo:hasReleaseDate ?releaseDate . }
       OPTIONAL { ?movie mo:hasRuntime ?runtime . }
       OPTIONAL { ?movie mo:belongsToGenre ?genre . }
@@ -136,6 +144,10 @@ async function fetchMovieDetails(movieLabel) {
         ?movie mo:hasDirector ?director .
         ?director mo:hasName ?directorName .
       }
+      OPTIONAL { ?movie mo:producedBy ?producer . }
+      OPTIONAL { ?movie mo:reviewedBy ?reviewer . }
+      OPTIONAL { ?movie mo:hasRatingValue ?rating . }
+      OPTIONAL { ?movie mo:screenedAt ?festival . }
     }
     LIMIT 1
   `;
@@ -162,11 +174,13 @@ async function fetchMovieDetails(movieLabel) {
       return {
         title: details.title?.value || "Unknown",
         releaseDate: details.releaseDate?.value || "Unknown",
-        runtime: details.runtime?.value
-          ? parseFloat(details.runtime.value).toString() // Remove trailing ".0"
-          : "Unknown",
-        genre: details.genreLabel?.value || "Unknown",
+        runtime: details.runtime?.value ? parseFloat(details.runtime.value).toString() : "Unknown",
+        genre: details.genre?.value.split("/").pop() || "Unknown",
         directorName: details.directorName?.value || "Unknown",
+        producer: details.producer?.value.split("/").pop() || "Unknown",
+        reviewer: details.reviewer?.value.split("/").pop() || "Unknown",
+        rating: details.rating?.value || "Unknown",
+        festival: details.festival?.value.split("/").pop() || "Unknown",
       };
     }
   } catch (error) {
@@ -184,14 +198,20 @@ function showMovieDetails(details) {
 
   modalTitle.textContent = details.title;
   modalDetails.innerHTML = `
-    <p>Release Date: ${details.releaseDate}</p>
-    <p>Runtime: ${details.runtime} minutes</p>
-    <p>Genre: ${details.genre}</p>
-    <p>Director: ${details.directorName}</p>
+    <p><strong>Release Date:</strong> ${details.releaseDate}</p>
+    <p><strong>Runtime:</strong> ${details.runtime} minutes</p>
+    <p><strong>Genre:</strong> ${details.genre}</p>
+    <p><strong>Director:</strong> ${details.directorName}</p>
+    <p><strong>Producer:</strong> ${details.producer}</p>
+    <p><strong>Reviewer:</strong> ${details.reviewer}</p>
+    <p><strong>Rating:</strong> ${details.rating}</p>
+    <p><strong>Screened At:</strong> ${details.festival}</p>
   `;
 
   modal.style.display = "flex";
 }
+
+
 
 // Search button event listener
 document.getElementById('searchButton').addEventListener('click', async () => {
@@ -209,7 +229,6 @@ document.getElementById('searchButton').addEventListener('click', async () => {
     displayMovies(movies);
   }
 });
-
 
 // Close modal functionality
 document.querySelector('.close-btn').addEventListener('click', () => {
@@ -229,12 +248,17 @@ function displayStars(stars) {
   const starsList = document.getElementById('starsResults');
   starsList.innerHTML = ''; // Clear existing content
 
-  if (stars.length === 0) {
+  // Filter out duplicates
+  const uniqueStars = stars.filter((star, index, self) => 
+    index === self.findIndex((s) => s.personLabel === star.personLabel)
+  );
+
+  if (uniqueStars.length === 0) {
     starsList.innerHTML = `<p>No stars found.</p>`;
     return;
   }
 
-  stars.forEach(star => {
+  uniqueStars.forEach(star => {
     const listItem = document.createElement('li');
     listItem.innerHTML = `
       <strong>${star.personLabel}</strong> - ${star.roleLabel} <br>
